@@ -1,0 +1,72 @@
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+<form action="/" method="post">
+  <div class="modal-dialog modal-dialog-centered">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create New Item</h5>
+        <button type="button" class="btn-close closing" id="close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="form-group createNew">
+        <div class="mb-3">
+          <label>Name of the place</label>
+          <input type="text" class="form-control" name="NamePlace" placeholder="Name">
+        </div>
+        <div class="mb-3">
+          <label>Price Range</label>
+          <select class="form-control" name="PriceRange">
+            <% Price_Range.forEach(function(item) { %>
+              <option> <%= item.name %> </option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label>Location</label>
+          <input type="text" class="form-control" name="NameLocation" placeholder="Location" autocomplete="on">
+        </div>
+        <div class="mb-3">
+          <label>Available for --> </label>
+          <% Food_Available.forEach((item, i) => { %>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" name="FoodSelect" id="avail_select" value="<%= item.name %>" >
+              <label class="form-check-label" for=avail_select">
+                <%= item.name %>
+              </label>
+            </div>
+         <% }); %>
+        </div>
+        <div class="mb-3">
+          <label>Food Cuisine</label>
+          <select class="form-control" name="FoodCuisine">
+            <% Food_Cuisine.forEach(function(item) { %>
+              <option> <%= item.name %> </option>
+            <% }); %>
+          </select>
+        </div>
+
+        <label>Visited/Want to Go ? </label>
+        <div class="mb-3">
+          <input type="radio" class="btn-check" name="options" id="option1" value="Want to Go" autocomplete="off">
+          <label class="btn btn-primary" for="option1">Want to go </label>
+
+          <input type="radio" class="btn-check" name="options" id="option2" value="Went Before" autocomplete="off">
+          <label class="btn btn-primary" for="option2">Went before </label>
+        </div>
+
+        <div class="input-group">
+          <span class="input-group-text">Comments</span>
+          <textarea class="form-control" name="comments" aria-label="With textarea"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary closing" id="close" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="AddItem">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+</div>

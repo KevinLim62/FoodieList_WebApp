@@ -1,0 +1,59 @@
+<%- include("partials/header") -%>
+
+<div class="d-flex justify-content-center">
+  <div class="row ms-4 me-2">
+  <div class="col g-3">
+    <div class="card w-100 h-100 text-bg-light mb-3">
+      <div class="card-header">Food Cuisine</div>
+      <div class="card-body">
+        <form action="/hashtag" method="post">
+        <div class="list-group hashtag">
+          <% Food_Cuisine.forEach(function(item) { %>
+            <a href="/hashtag/cuisine/<%= item.name %>" class="list-group-item list-group-item-action"><%= item.name %></a>
+          <% }); %>
+        </div>
+        </form>
+        <form action="/hashtag" method="post">
+        <div>
+          <input type="text" class="form-control" placeholder="Add New Hashtag" aria-label="Example text with button addon" aria-describedby="button-addon1">
+          <button class="btn btn-outline-secondary" type="button" id="button-addon1">Add</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+  <div class="col g-3">
+    <div class="card w-100 h-50 text-bg-light mb-3">
+      <div class="card-header">Food Availability</div>
+      <div class="card-body">
+        <form action="/hashtag" method="post">
+        <div class="list-group hashtag">
+          <% Food_Available.forEach(function(item) { %>
+            <a href="/hashtag/availability/<%= item.name %>" class="list-group-item list-group-item-action"><%= item.name %></a>
+          <% }); %>
+        </div>
+        </form>
+        </div>
+      </div>
+      <div class="card w-100 h-50 text-bg-light mb-3">
+        <div class="card-header">Price_Range</div>
+        <div class="card-body">
+          <form action="/hashtag" method="post">
+          <div class="list-group hashtag">
+            <% Price_Range.forEach(function(item) { %>
+              <a href="/hashtag/price/<%= item.name %>" class="list-group-item list-group-item-action"><%= item.name %></a>
+            <% }); %>
+          </div>
+          </form>
+          </div>
+        </div>
+    </div>
+  </div>
+
+</div>
+
+
+</div>
+</div>
+
+<%- include("partials/footer") -%>
