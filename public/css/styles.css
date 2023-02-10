@@ -54,10 +54,10 @@ margin-top: 15px;
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
-#close:hover,
-#close:focus {
-  color: #000;
-  text-decoration: none;
+#modal_trigger:hover,
+#modal_trigger:focus {
+  color: red;
+  text-decoration: underline;
   cursor: pointer;
 }
 

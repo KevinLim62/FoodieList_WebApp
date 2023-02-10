@@ -3,7 +3,10 @@
 <form action="/" method="post">
   <div class="form-group">
     <input class="form-control" type="text" placeholder="Search bar">
-    <button type="button" id="CreateNew" class="btn btn-dark">Create</button>
+    <!-- <button type="button" id="CreateNew" class="btn btn-dark">Create</button> -->
+    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#create_item">
+        Create
+    </button>
     <button type="button" class="btn btn-dark">Search</button>
   </div>
 </form>
@@ -11,9 +14,36 @@
 <%- include("partials/form") -%>
 
 <div class="row ms-4 me-2">
+
 <% FoodItem.forEach((fooditem, i) => { %>
     <div class="col-lg-3 col-md-4 col-sm-6 g-3">
       <div class="card w-80 h-100">
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-default" id="modal_trigger" data-bs-toggle="modal" data-bs-target="#delete_item">
+                Delete
+            </button>
+            <form action="/delete" method="post">
+              <!-- Modal -->
+              <div class="modal fade" id="delete_item" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Alert</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      Do you confirm to delete the item?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button name="deleteditem_id" type="submit" value="<%= fooditem.id %>" class="btn btn-primary">Yes</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+          </div>
         <div class="card-body">
           <h5 class="card-title"><%= fooditem.name %></h5>
           <ul class="list-group">
@@ -28,18 +58,19 @@
           <a href="/link/<%=fooditem._id %>" class="card-link">Card link</a>
         </div>
       </div>
+
     </div>
 <%  }); %>
+
+    <nav aria-label="Page navigation">
+      <ul class="pagination pagination-lg justify-content-center">
+        <%  for (let i = 0; i <= Page_num; i++) { %>
+         <li class="page-item"><a class="page-link" href="/?skip=<%=i*8%>"> <%=i+1 %> </a></li>
+        <% } %>
+      </ul>
+    </nav>
 </div>
 
-<!-- <nav aria-label="Page navigation example">
-  <ul class="pagination">
-    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-  </ul>
-</nav> -->
+
 
 <%- include("partials/footer") -%>
