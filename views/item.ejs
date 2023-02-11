@@ -1,6 +1,9 @@
 <%- include("partials/header") -%>
 
 <% if(Array.isArray(LinkItem)){ %>
+  <div class="d-flex justify-content-center p-3">
+    <h5> <%=Comments%> </h5>
+  </div>
 <div class="row ms-4 me-2">
   <% LinkItem.forEach((fooditem, i) => { %>
   <div class="col-lg-3 col-md-4 col-sm-6 g-3">
