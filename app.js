@@ -4,33 +4,8 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
 const lodash = require("lodash");
-//import {price_range, food_available, food_cuisine} from 'index.js';
-
- const price_range = [
-  {name:'Cheap $'},
-  {name:'Normal $$'},
-  {name:'Expensive $$$'}
-    ];
-
- const food_available = [
-  {name:'Breakfast'},
-  {name:'Lunch'},
-  {name:'Dinner'}
-    ];
-
- const food_cuisine = [
-  {name:'Malay'},
-  {name:'Chinese'},
-  {name:'Indian'},
-  {name:'Nyonya'},
-  {name:'Eurasian'},
-  {name:'Western'},
-  {name:'Thai'},
-  {name:'Japanese'},
-  {name:'Korean'},
-  {name:'Vietnamese'},
-  {name:'Arabic'}
-    ];
+const text = require("./constant");
+const db = require("./database");
 
 const app = express();
 app.set('view engine','ejs');
@@ -38,80 +13,21 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(express.static("public"));
-
-//Database setting (MongoDB - NoSQL)
-mongoose.set('strictQuery', true);
-mongoose.connect('mongodb://127.0.0.1/FoodieListDB');
-
-
-
-const FoodInfoSchema = {
-  name: String,
-};
-
-const FoodItemSchema = {
-  name: String,
-  price: String,
-  location: String,
-  availability: Array,
-  cuisine: String,
-  option: String,
-  comments: String
-};
-
-const FoodCuisine = mongoose.model("foodcuisine", FoodInfoSchema);
-const FoodPrice = mongoose.model("foodprice", FoodInfoSchema);
-const FoodAvailability = mongoose.model("foodavailability", FoodInfoSchema);
-const FoodItems = mongoose.model("Fooditem", FoodItemSchema);
-
- async function getFoodieLists(modelname,query,limit,skip) {
-   const items = await modelname.find(query).limit(limit).skip(skip);
-   return items;
- }
-
- const items_initialize = async (model1,model2,model3) => {
-
-   if(model1.length === 0)
-   {
-     FoodCuisine.insertMany(food_cuisine,(err,docs)=>{
-       if(err){
-         console.log("Food cuisine data failed uploaded");
-       }
-     });
-   }
-
-   if(model2.length === 0)
-   {
-     FoodPrice.insertMany(price_range,(err,docs)=>{
-       if(err){
-         console.log("Food price data failed uploaded");
-       }
-     });
-   }
-
-   if(model3.length === 0)
-   {
-     FoodAvailability.insertMany(food_available,(err,docs)=>{
-       if(err){
-         console.log("Food availability data failed uploaded");
-       }
-     });
-   }
- }
+app.use(express.json());
 
 app.get("/",async function(req,res){
 
   //_________________Initializing__________________
-  const cuisine_items = await getFoodieLists(FoodCuisine,{},0,0);
-  const price_items = await getFoodieLists(FoodPrice,{},0,0);
-  const availability_items = await getFoodieLists(FoodAvailability,{},0,0);
-  const food_items = await getFoodieLists(FoodItems,{},0,0);
+  const cuisine_items = await db.getFoodieLists(db.FoodCuisine,{},0,0);
+  const price_items = await db.getFoodieLists(db.FoodPrice,{},0,0);
+  const availability_items = await db.getFoodieLists(db.FoodAvailability,{},0,0);
+  const food_items = await db.getFoodieLists(db.FoodItems,{},0,0);
   //items_initialize(cuisine_items,price_items,availability_items);
 
   const content_limit = 8;
   let content_skip = req.query.skip? req.query.skip : 0;
 
-  const display_fooditems = await getFoodieLists(FoodItems,{},content_limit,content_skip);
+  const display_fooditems = await db.getFoodieLists(db.FoodItems,{},content_limit,content_skip);
   const page_num = (food_items.length)/8 <= 1 ? 0 : Math.floor((food_items.length)/8);
 
   res.render("home",{
@@ -127,9 +43,9 @@ app.get("/",async function(req,res){
 
 app.get("/hashtag", async function(req,res){
 
-  const cuisineItem = await getFoodieLists(FoodCuisine,{});
-  const price_items = await getFoodieLists(FoodPrice,{});
-  const availability_items = await getFoodieLists(FoodAvailability,{});
+  const cuisineItem = await db.getFoodieLists(db.FoodCuisine,{});
+  const price_items = await db.getFoodieLists(db.FoodPrice,{});
+  const availability_items = await db.getFoodieLists(db.FoodAvailability,{});
 
   res.render("hashtag",{
     Food_Cuisine: cuisineItem,
@@ -145,7 +61,7 @@ app.get("/hashtag/:ItemType/:ItemName", async function(req,res){
   const itemType = req.params.ItemType;
   const itemName = req.params.ItemName;
   query_string[itemType] = itemName;
-  const items = await getFoodieLists(FoodItems,query_string);
+  const items = await db.getFoodieLists(db.FoodItems,query_string);
 
   const comments = items.length>0? `Found ${items.length} Places`:"No Food Place Was Found...";
 
@@ -160,7 +76,7 @@ app.get("/hashtag/:ItemType/:ItemName", async function(req,res){
 app.get("/link/:id",function(req,res){
 
   let itemID = req.params.id;
-  FoodItems.findById(itemID,function(err,founditems){
+  db.FoodItems.findById(itemID,function(err,founditems){
       if(!err)
       {
         res.render("item",{
@@ -173,22 +89,15 @@ app.get("/link/:id",function(req,res){
 
 app.post("/",function(req,res){
 
-  const info1 = req.body.NamePlace;
-  const info2 = req.body.PriceRange;
-  const info3 = req.body.NameLocation;
-  const info4 = req.body.FoodSelect;
-  const info5 = req.body.FoodCuisine;
-  const info6 = req.body.options;
-  const info7 = req.body.comments;
-
-  const Fooditem = new FoodItems ({
-    name: info1,
-    price: info2,
-    location: info3,
-    availability: info4,
-    cuisine: info5,
-    option: info6,
-    comments: info7
+  const content = req.body;
+  const Fooditem = new db.FoodItems ({
+    name: content.NamePlace,
+    price: content.PriceRange,
+    location: content.NameLocation,
+    availability: content.FoodSelect,
+    cuisine: content.FoodCuisine,
+    option: content.options,
+    comments: content.comments
   })
 
   Fooditem.save();
@@ -199,7 +108,7 @@ app.post("/",function(req,res){
 app.post("/delete",function(req,res){
 
   const deleteditem_id = req.body.deleteditem_id;
-  FoodItems.findByIdAndRemove(deleteditem_id, function(err,founditems){
+  db.FoodItems.findByIdAndRemove(deleteditem_id, function(err,founditems){
     if (!err)
     {
       console.log("Item was successfully deleted!");
@@ -207,6 +116,18 @@ app.post("/delete",function(req,res){
   });
 
   res.redirect("/");
+})
+
+app.post("/search", async function(req,res){
+  const search_query = req.body.search_query;
+  console.log(search_query);
+  //const display_fooditems = await db.getFoodieLists(db.FoodItems,{});
+
+  // const searched_fooditems = await display_fooditems.filter( item => {
+  //    return item.name.includes(search_query);
+  //  });
+
+  //console.log(searched_fooditems);
 })
 
 
