@@ -1,15 +1,14 @@
 <%- include("partials/header") -%>
 
-<form action="/" method="post">
-  <div class="form-group">
-    <input class="form-control" type="text" placeholder="Search bar">
-    <!-- <button type="button" id="CreateNew" class="btn btn-dark">Create</button> -->
-    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#create_item">
-        Create
-    </button>
-    <button type="button" class="btn btn-dark">Search</button>
-  </div>
-</form>
+   <div class="form-group">
+     <input class="form-control" type="text" id="search_result" placeholder="Search bar">
+     <!-- <button type="button" id="CreateNew" class="btn btn-dark">Create</button> -->
+     <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#create_item">
+         Create
+     </button>
+     <button type="button" class="btn btn-dark">Search</button>
+   </div>
+
 
 <%- include("partials/form") -%>
 
@@ -61,7 +60,6 @@
 
     </div>
 <%  }); %>
-
     <nav aria-label="Page navigation">
       <ul class="pagination pagination-lg justify-content-center">
         <%  for (let i = 0; i <= Page_num; i++) { %>
