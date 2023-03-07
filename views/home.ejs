@@ -1,72 +1,51 @@
 <%- include("partials/header") -%>
 
-   <div class="form-group">
-     <input class="form-control" type="text" id="search_result" placeholder="Search bar">
-     <!-- <button type="button" id="CreateNew" class="btn btn-dark">Create</button> -->
-     <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#create_item">
-         Create
-     </button>
-     <button type="button" class="btn btn-dark">Search</button>
-   </div>
+<form action="/" method="get">
+  <div class="form-group">
+    <input class="form-control" type="text" name="search_result" value="<%= Search_content %>" placeholder="Search bar">
+    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#create_item">
+      Create
+    </button>
+    <button type="submit" class="btn btn-dark">Search</button>
+  </div>
+</form>
 
 
 <%- include("partials/form") -%>
 
 <div class="row ms-4 me-2">
 
-<% FoodItem.forEach((fooditem, i) => { %>
-    <div class="col-lg-3 col-md-4 col-sm-6 g-3">
-      <div class="card w-80 h-100">
-          <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-default" id="modal_trigger" data-bs-toggle="modal" data-bs-target="#delete_item">
-                Delete
-            </button>
-            <form action="/delete" method="post">
-              <!-- Modal -->
-              <div class="modal fade" id="delete_item" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">Alert</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      Do you confirm to delete the item?
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                      <button name="deleteditem_id" type="submit" value="<%= fooditem.id %>" class="btn btn-primary">Yes</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
-
-          </div>
+  <% FoodItem.forEach((fooditem, i) => { %>
+  <div class="col-lg-3 col-md-4 col-sm-6 g-3">
+    <div class="card w-80 h-100">
+      <form action="/delete" method="post">
+        <div class="d-flex flex-row-reverse">
+          <button type="submit" class="btn btn-default">Delete</button>
+        </div>
         <div class="card-body">
+          <input type="hidden" name="deleteditem_id" value="<%=fooditem._id%>">
           <h5 class="card-title"><%= fooditem.name %></h5>
           <ul class="list-group">
-
-            <li>Price Range:  <%= fooditem.price %></li>
-            <li>Location:    <%= fooditem.location %></li>
+            <li>Price Range: <%= fooditem.price %></li>
+            <li>Location: <%= fooditem.location %></li>
             <li>Availability :<%= fooditem.availability %></li>
             <li>Cuisine Type :<%= fooditem.cuisine %></li>
-            <li>Option       :<%= fooditem.option %></li>
-            <li>Comments     :<%= fooditem.comments %></li>
+            <li>Option :<%= fooditem.option %></li>
+            <li>Comments :<%= fooditem.comments %></li>
           </ul>
           <a href="/link/<%=fooditem._id %>" class="card-link">Card link</a>
         </div>
-      </div>
-
+      </form>
     </div>
-<%  }); %>
-    <nav aria-label="Page navigation">
-      <ul class="pagination pagination-lg justify-content-center">
-        <%  for (let i = 0; i <= Page_num; i++) { %>
-         <li class="page-item"><a class="page-link" href="/?skip=<%=i*8%>"> <%=i+1 %> </a></li>
-        <% } %>
-      </ul>
-    </nav>
+  </div>
+  <%  }); %>
+  <nav aria-label="Page navigation">
+    <ul class="pagination pagination-lg justify-content-center">
+      <%  for (let i = 0; i <= Page_num; i++) { %>
+      <li class="page-item"><a class="page-link" type="submit" name="content_skip" value=<%=i*8%> href="/?skip=<%=i*8%>&search_result=<%=Search_content%>"> <%=i+1 %> </a></li>
+      <% } %>
+    </ul>
+  </nav>
 </div>
 
 

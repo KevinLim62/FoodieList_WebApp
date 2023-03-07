@@ -2,10 +2,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
-const mongoose = require("mongoose");
 const lodash = require("lodash");
-const text = require("./constant");
-const db = require("./database");
+const text = require("./public/constant.js");
+const db = require("./public/database.js");
 
 const app = express();
 app.set('view engine','ejs');
@@ -15,8 +14,13 @@ app.use(bodyParser.urlencoded({
 app.use(express.static("public"));
 app.use(express.json());
 
+let search_content = "";
+
 app.get("/",async function(req,res){
 
+  const content_limit = 8;
+  const content_skip = req.query.skip? req.query.skip : 0;
+  search_content = req.query.search_result;
   //_________________Initializing__________________
   const cuisine_items = await db.getFoodieLists(db.FoodCuisine,{},0,0);
   const price_items = await db.getFoodieLists(db.FoodPrice,{},0,0);
@@ -24,22 +28,24 @@ app.get("/",async function(req,res){
   const food_items = await db.getFoodieLists(db.FoodItems,{},0,0);
   //items_initialize(cuisine_items,price_items,availability_items);
 
-  const content_limit = 8;
-  let content_skip = req.query.skip? req.query.skip : 0;
+  const searched_fooditems = search_content !== undefined? food_items.filter( item => {
+       return item.name.includes(search_content);
+  }) : food_items;
 
-  const display_fooditems = await db.getFoodieLists(db.FoodItems,{},content_limit,content_skip);
-  const page_num = (food_items.length)/8 <= 1 ? 0 : Math.floor((food_items.length)/8);
-
+  const page_num = (searched_fooditems.length)/8 <= 1 ? 0 : Math.floor((searched_fooditems.length)/8);
+  const start = Number(content_skip);
+  const end = Number(content_skip)+8;
+  const display_fooditems = searched_fooditems.slice(start,end);
+  //console.log(display_fooditems);
   res.render("home",{
     Price_Range: price_items,
     Food_Available : availability_items,
     Food_Cuisine: cuisine_items,
     FoodItem: display_fooditems,
-    Page_num: page_num
+    Page_num: page_num,
+    Search_content: search_content
     });
-
 })
-
 
 app.get("/hashtag", async function(req,res){
 
@@ -108,6 +114,7 @@ app.post("/",function(req,res){
 app.post("/delete",function(req,res){
 
   const deleteditem_id = req.body.deleteditem_id;
+  console.log(deleteditem_id);
   db.FoodItems.findByIdAndRemove(deleteditem_id, function(err,founditems){
     if (!err)
     {
@@ -118,19 +125,8 @@ app.post("/delete",function(req,res){
   res.redirect("/");
 })
 
-app.post("/search", async function(req,res){
-  const search_query = req.body.search_query;
-  console.log(search_query);
-  //const display_fooditems = await db.getFoodieLists(db.FoodItems,{});
-
-  // const searched_fooditems = await display_fooditems.filter( item => {
-  //    return item.name.includes(search_query);
-  //  });
-
-  //console.log(searched_fooditems);
-})
 
 
-app.listen(3000, function(){
+app.listen(process.env.PORT || 3000, function() {
   console.log("Server has started!");
 })

@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 
 mongoose.set('strictQuery', true);
-mongoose.connect('mongodb://127.0.0.1/FoodieListDB');
+mongoose.connect('mongodb+srv://cheryiong62:Kevin480023@cluster0.xe0y6tt.mongodb.net/FoodieDB');
+//mongoose.connect('mongodb://127.0.0.1/FoodieListDB');
 
 const FoodInfoSchema = {
   name: String,
